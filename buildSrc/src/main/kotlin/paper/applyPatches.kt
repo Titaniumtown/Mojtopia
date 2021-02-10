@@ -116,12 +116,6 @@ fun applyPatches(project: Project): Task {
         doLast {
             applyPatch(File(spigotDir, "Spigot-API"), File(basedir, "Paper-API"), "HEAD", logger)
             applyPatch(File(spigotDir, "Spigot-Server"), File(basedir, "Paper-Server"), "HEAD", logger)
-
-            // TODO do we really need this?
-            //    # if we have previously ran ./paper mcdev, update it
-            //    if [ -d "$workdir/Minecraft/$minecraftversion/src" ]; then
-            //        $basedir/scripts/makemcdevsrc.sh $basedir
-            //    fi
         }
     }
 
