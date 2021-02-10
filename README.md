@@ -1,6 +1,8 @@
 # Mojtopia
 
-This project aims to use a Yatopia-like build system, but remapping to mojang's mappings via https://github.com/MiniDigger/Toothpick
+This project aims to use a Yatopia-like build system, but remapping to mojang's mappings via https://github.com/MiniDigger/Toothpick.
+
+But as of now, the aim of the project is simply to allow having Yatopia (or any other Paper fork) as an upstream instead of just Paper.
 
 ## Building
 
@@ -16,14 +18,13 @@ You can run those in both windows and linux env, but you shouldn't fix and match
 ### Steps for building
 
 Pre-requirements
-- JDK-1.8
 - JDK-11+
 - Maven (and Gradle)
 - setup JAVA_HOME
 
 1. `git clone https://github.com/CadixDev/Lorenz/` (could require JDK-1.8 for compiling)
 2. `cd Mercury/ && ./gradlew build install`
-3. After building the dependencies `git clone https://github.com/MiniDigger/Toothpick` (requires JDK-11+ for compiling)
+3. After building the dependencies `git clone https://github.com/MiniDigger/Toothpick`
 4. run (under Windows use `./gradle.bat` instead of `./gradlew`) 
     1. `./gradlew setupUpstream`
     2. `./gradlew mojangMappings`

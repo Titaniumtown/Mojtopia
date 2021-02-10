@@ -1,8 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Simon Gardling <titaniumtown@gmail.com>
 Date: Wed, 10 Feb 2021 00:17:04 -0500
-Subject: [PATCH] fixes
+Subject: [PATCH] API Fixes
 
+Mostly fixes some warnings when building about things missing `@Deprecated`. Put all fixes for errors/warnings caused by the remapping process here.
 
 diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerInitialSpawnEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerInitialSpawnEvent.java
 index 8b1fdb9d2869d4c1862d557c91bf8a1d8c537507..626e97bbcaa19d55475a0fc8770412d437af2733 100644

@@ -1,8 +1,9 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: ysl3000 <yannicklamprecht@live.de>
-Date: Sat, 25 Jul 2020 16:06:11 +0200
-Subject: [PATCH] Fixes
+From: Simon Gardling <titaniumtown@gmail.com>
+Date: Wed, 10 Feb 2021 11:14:37 -0500
+Subject: [PATCH] Server Fixes
 
+This patch fixes issues caused by the remapping process to Mojang's Mappings. Put all such fixes in this patch.
 
 diff --git a/pom.xml b/pom.xml
 index 9ba379b7e3ee3bc8c6d2c8ec46213c404c73d682..23dc7ce0c3eb5f32bddfc6a4fd66b57d45f94578 100644
