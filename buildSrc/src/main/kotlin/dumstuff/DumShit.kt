@@ -17,7 +17,6 @@ import java.net.URL
 import java.nio.file.Files
 
 fun dumShitTasks(project: Project): List<Task> {
-    val modFolder = project.projectDir.resolve("DyescapePaper-Server/src/main/java")
     val origFolder = project.projectDir.resolve("work/decomp")
     val workFolder = project.projectDir.resolve("work/dumShit")
     val patches = workFolder.resolve("patches")
@@ -30,22 +29,14 @@ fun dumShitTasks(project: Project): List<Task> {
     val serverUrl = "https://launcher.mojang.com/v1/objects/6290ba4b475fca4a74de990c7fd8eccffd9654dd/server.jar"
     val serverMappingUrl = "https://launcher.mojang.com/v1/objects/c4e373406d2166580c33b075c2d05d9d2fb18d43/server.txt"
     val minecraftVersion = "21w06a"
-
-    val extractMod: Task by project.tasks.creating {
-        group = taskGroupPrivate
-        onlyIf {
-            !modClasses.exists()
-        }
-        doLast {
-            modClasses.mkdirs()
-            ensureSuccess(cmd("jar", "xf", project.projectDir.resolve("DyescapePaper-Server/target/dyescapepaper-1.15.2.jar").toString(), "net/minecraft", directory = modClasses, printToStdout = true))
-
-        }
-    }
+    /*
+    val serverUrl = "https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
+    val serverMappingUrl = "https://launcher.mojang.com/v1/objects/41285beda6d251d190f2bf33beadd4fee187df7a/server.txt"
+    val minecraftVersion = "1.16.5"
+    */
 
     val decompileMod: Task by project.tasks.creating {
         group = taskGroupPrivate
-        dependsOn(extractMod)
         onlyIf {
             !modDecomp.resolve("net/minecraft/server/MinecraftServer.java").exists()
         }
