@@ -26,3 +26,6 @@ MiniPaper-API/
 MiniPaper-Server/
 work/
 testserver/
+
+
+patches/server/0002-1.16.5-21w06a.patch

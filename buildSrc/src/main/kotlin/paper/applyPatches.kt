@@ -88,6 +88,26 @@ fun applyPatches(project: Project): Task {
                 import(it, logger)
             }
 
+            // for 21w06a patch
+            // import("", logger)
+            import("CrashReportSystemDetails", logger)
+            import("MinecraftVersion", logger)
+            import("CriterionTriggerBeeNestDestroyed", logger)
+            import("CriterionConditionBlock", logger)
+            import("CriterionTriggerBredAnimals", logger)
+            import("CriterionTriggerConstructBeacon", logger)
+            // import("CriterionConditionEntity", logger)
+            import("CriterionConditionEntityType", logger)
+            import("CriterionConditionInOpenWater", logger)
+            import("CriterionConditionFluid", logger)
+            import("CriterionConditionItem", logger)
+            import("CriterionConditionNBT", logger)
+            import("CriterionConditionPlayer", logger)
+            import("ArgumentAngle", logger)
+            import("ArgumentMobEffect", logger)
+            import("ArgumentMathOperation", logger)
+
+
             // libs
             importLibrary("com.mojang", "authlib", "com/mojang/authlib", "yggdrasil/YggdrasilGameProfileRepository.java")
             importLibrary("com.mojang", "datafixerupper", "com/mojang/datafixers/util", "Either.java")
