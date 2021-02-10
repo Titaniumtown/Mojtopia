@@ -6,7 +6,7 @@ plugins {
 
 
 toothpick {
-    minecraftVersion = "1.16.1"
+    minecraftVersion = "1.16.5"
     forkName = "MiniPaper"
     groupId = "me.minidigger.MiniPaper"
     upstreamName = "Paper"

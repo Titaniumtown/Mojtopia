@@ -3,8 +3,8 @@ import java.io.File
 
 open class ToothPickExtension(@Suppress("UNUSED_PARAMETER") objects: ObjectFactory) {
 
-    var minecraftVersion: String = "1.16.2"
-    var serverMappings: String = "https://launcher.mojang.com/v1/objects/3405a0f2c0ccacd36a8158ae29b16eaa915b5d28/server.txt"
+    var minecraftVersion: String = "1.16.5"
+    var serverMappings: String = "https://launcher.mojang.com/v1/objects/41285beda6d251d190f2bf33beadd4fee187df7a/server.txt"
     lateinit var forkName: String
     lateinit var upstreamName: String
     lateinit var groupId: String

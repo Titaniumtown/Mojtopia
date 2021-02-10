@@ -91,6 +91,9 @@ fun applyPatches(project: Project): Task {
             // libs
             importLibrary("com.mojang", "authlib", "com/mojang/authlib", "yggdrasil/YggdrasilGameProfileRepository.java")
             importLibrary("com.mojang", "datafixerupper", "com/mojang/datafixers/util", "Either.java")
+            importLibrary("com.mojang", "datafixerupper", "com/mojang/serialization/codecs", "KeyDispatchCodec.java")
+            importLibrary("com.mojang", "datafixerupper", "com/mojang/datafixers", "DataFixerBuilder.java")
+            importLibrary("com.mojang", "datafixerupper", "com/mojang/serialization", "Dynamic.java")
         }
     }
 

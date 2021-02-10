@@ -5,7 +5,7 @@ Subject: [PATCH] Preremapping
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/util/PlayerMobDistanceMap.java b/src/main/java/com/destroystokyo/paper/util/PlayerMobDistanceMap.java
-index 9ebd7ecb7a0ac73ccacf34c097056598bb5d26e8..632aed4725ca043873c5c0be1cacfb84e6771e5f 100644
+index 9ebd7ecb7..632aed472 100644
 --- a/src/main/java/com/destroystokyo/paper/util/PlayerMobDistanceMap.java
 +++ b/src/main/java/com/destroystokyo/paper/util/PlayerMobDistanceMap.java
 @@ -3,6 +3,7 @@ package com.destroystokyo.paper.util;
@@ -19,14 +19,14 @@ index 9ebd7ecb7a0ac73ccacf34c097056598bb5d26e8..632aed4725ca043873c5c0be1cacfb84
 @@ -76,7 +77,7 @@ public final class PlayerMobDistanceMap {
          final int centerX = currPosition.getX();
          final int centerZ = currPosition.getZ();
-
+ 
 -        for (final Long2ObjectLinkedOpenHashMap.Entry<PooledHashSets.PooledObjectLinkedOpenHashSet<EntityPlayer>> entry : this.playerMap.long2ObjectEntrySet()) {
 +        for (final Long2ObjectMap.Entry<PooledHashSets.PooledObjectLinkedOpenHashSet<EntityPlayer>> entry : this.playerMap.long2ObjectEntrySet()) {
              final long key = entry.getLongKey();
              final PooledHashSets.PooledObjectLinkedOpenHashSet<EntityPlayer> map = entry.getValue();
-
+ 
 diff --git a/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java b/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
-index f625da9f0968b6f41e302b628c4439198eb4ed64..f9c0f52920d27fb71ef4b252b3c9152dfc5a9a18 100644
+index 1330df2c1..e19a9c35c 100644
 --- a/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
 +++ b/src/main/java/com/destroystokyo/paper/util/misc/AreaMap.java
 @@ -3,6 +3,7 @@ package com.destroystokyo.paper.util.misc;
@@ -37,15 +37,16 @@ index f625da9f0968b6f41e302b628c4439198eb4ed64..f9c0f52920d27fb71ef4b252b3c9152d
  import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
  import net.minecraft.server.ChunkCoordIntPair;
-@@ -134,10 +135,10 @@ public abstract class AreaMap<E> {
+@@ -173,10 +174,10 @@ public abstract class AreaMap<E> {
          final int centerX = MCUtil.getCoordinateX(currPosition);
          final int centerZ = MCUtil.getCoordinateZ(currPosition);
-
+ 
 -        for (Iterator<Long2ObjectLinkedOpenHashMap.Entry<PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<E>>> iterator = this.areaMap.long2ObjectEntrySet().fastIterator();
 +        for (Iterator<Long2ObjectMap.Entry<PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<E>>> iterator = this.areaMap.long2ObjectEntrySet().fastIterator();
               iterator.hasNext();) {
-
+ 
 -            final Long2ObjectLinkedOpenHashMap.Entry<PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<E>> entry = iterator.next();
 +            final Long2ObjectMap.Entry<PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<E>> entry = iterator.next();
              final long key = entry.getLongKey();
              final PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<E> map = entry.getValue();
+ 

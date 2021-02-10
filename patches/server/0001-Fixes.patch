@@ -1,0 +1,709 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ysl3000 <yannicklamprecht@live.de>
+Date: Sat, 25 Jul 2020 16:06:11 +0200
+Subject: [PATCH] Fixes
+
+
+diff --git a/pom.xml b/pom.xml
+index 9ba379b7e3ee3bc8c6d2c8ec46213c404c73d682..23dc7ce0c3eb5f32bddfc6a4fd66b57d45f94578 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -162,6 +162,10 @@
+             <id>spigotmc-public</id>
+             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+         </repository>
++        <repository>
++            <id>aikar</id>
++            <url>https://repo.aikar.co/content/groups/aikar/</url>
++        </repository>
+     </repositories>
+ 
+     <pluginRepositories>
+diff --git a/src/main/java/net/minecraft/core/BlockPos.java b/src/main/java/net/minecraft/core/BlockPos.java
+index fd853350b9ec02ac1a923f5ce73b4324a17d0902..1ced3c1e42139de75be39cdb4a4a56a65db11823 100644
+--- a/src/main/java/net/minecraft/core/BlockPos.java
++++ b/src/main/java/net/minecraft/core/BlockPos.java
+@@ -118,6 +118,9 @@ public class BlockPos extends Vec3i {
+         return this.offset(-baseblockposition.getX(), -baseblockposition.getY(), -baseblockposition.getZ());
+     }
+ 
++    public BlockPos up() { // Toothpick
++        return above();
++    }
+     @Override
+     public BlockPos above() {
+         return new BlockPos(this.getX(), this.getY() + 1, this.getZ()); // Paper - Optimize BlockPosition
+diff --git a/src/main/java/net/minecraft/core/IdMapper.java b/src/main/java/net/minecraft/core/IdMapper.java
+index b8499312bb21a5f75796e04cf3ec3e200e5e93b2..f93892e79b2b31bf37bcfc811a76cedd97338b9d 100644
+--- a/src/main/java/net/minecraft/core/IdMapper.java
++++ b/src/main/java/net/minecraft/core/IdMapper.java
+@@ -41,12 +41,6 @@ public class IdMapper<T> implements IdMap<T> {
+         this.addMapping(t0, this.nextId);
+     }
+ 
+-    // Paper start - decompile fix
+-    @Override
+-    public int getId(T t) {
+-        return getId(t);
+-    }
+-    // Paper end
+ 
+     public int getId(T t0) {
+         Integer integer = (Integer) this.tToId.get(t0);
+diff --git a/src/main/java/net/minecraft/core/SectionPos.java b/src/main/java/net/minecraft/core/SectionPos.java
+index 544d3443f34b5ec4be9c6a734eab3888bf5784bb..2cf6a7a4b592c0543e89973f3daeba955324e5bc 100644
+--- a/src/main/java/net/minecraft/core/SectionPos.java
++++ b/src/main/java/net/minecraft/core/SectionPos.java
+@@ -142,7 +142,6 @@ public class SectionPos extends Vec3i {
+         return (this.z() << 4) + 15;
+     }
+ 
+-    public static long blockToSection(long i) { return blockToSection(i); } // Paper - OBFHELPER
+     public static long blockToSection(long i) {
+         // b(a(BlockPosition.b(i)), a(BlockPosition.c(i)), a(BlockPosition.d(i)));
+         return (((long) (int) (i >> 42) & 4194303L) << 42) | (((long) (int) ((i << 52) >> 56) & 1048575L)) | (((long) (int) ((i << 26) >> 42) & 4194303L) << 20); // Simplify to reduce instruction count
+@@ -171,7 +170,6 @@ public class SectionPos extends Vec3i {
+         return (((long) (i >> 4) & 4194303L) << 42) | (((long) (j >> 4) & 1048575L)) | (((long) (k >> 4) & 4194303L) << 20);
+     }
+     // Paper end
+-    public static long asLong(int i, int j, int k) { return asLong(i, j, k); } // Paper - OBFHELPER
+     public static long asLong(int i, int j, int k) {
+         return (((long) i & 4194303L) << 42) | (((long) j & 1048575L)) | (((long) k & 4194303L) << 20); // Paper - Simplify to reduce instruction count
+     }
+diff --git a/src/main/java/net/minecraft/core/Vec3i.java b/src/main/java/net/minecraft/core/Vec3i.java
+index dde13e545a3e69b90a6f4916b658bb006acf2bcb..5238c45caf01efa9296d8ba874c2926dce718f65 100644
+--- a/src/main/java/net/minecraft/core/Vec3i.java
++++ b/src/main/java/net/minecraft/core/Vec3i.java
+@@ -18,9 +18,9 @@ public class Vec3i implements Comparable<Vec3i> {
+         return IntStream.of(new int[]{baseblockposition.getX(), baseblockposition.getY(), baseblockposition.getZ()});
+     });
+     public static final Vec3i ZERO = new Vec3i(0, 0, 0);
+-    public int x;public final void setX(final int x) { this.x = x; } // Paper - OBFHELPER
+-    public int y;public final void setY(final int y) { this.y = y; } // Paper - OBFHELPER
+-    public int z;public final void setZ(final int z) { this.z = z; } // Paper - OBFHELPER
++    public int x;
++    public int y;
++    public int z;
+ 
+     // Paper start
+     public boolean isValidLocation() {
+diff --git a/src/main/java/net/minecraft/network/protocol/game/ServerboundEditBookPacket.java b/src/main/java/net/minecraft/network/protocol/game/ServerboundEditBookPacket.java
+index ae306d9710d2b2d318a81a469f12ac8d7afb3a65..2406ba5421079325d8e9d75c80fe19832b22446f 100644
+--- a/src/main/java/net/minecraft/network/protocol/game/ServerboundEditBookPacket.java
++++ b/src/main/java/net/minecraft/network/protocol/game/ServerboundEditBookPacket.java
+@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
+ 
+ public class ServerboundEditBookPacket implements Packet<ServerGamePacketListener> {
+ 
+-    private ItemStack book; public ItemStack getBook() { return book; } // Paper - OBFHELPER
++    private ItemStack book;
+     private boolean signing;
+     private int slot;
+ 
+diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
+index 62cb967b72acde276e99df87878da9978c73b5c2..82df81b3a736db9ab2baf44b8282b1edfacbe0b9 100644
+--- a/src/main/java/net/minecraft/server/Main.java
++++ b/src/main/java/net/minecraft/server/Main.java
+@@ -205,7 +205,7 @@ public class Main {
+ 
+             convertable_conversionsession.a((IRegistryCustom) iregistrycustom_dimension, (SaveData) object);
+             */
+-            Class.forName("net.minecraft.server.VillagerTrades");// Paper - load this sync so it won't fail later async
++            Class.forName("net.minecraft.world.entity.npc.VillagerTrades");// Paper - load this sync so it won't fail later async
+             final DedicatedServer dedicatedserver = (DedicatedServer) MinecraftServer.spin((thread) -> {
+                 DedicatedServer dedicatedserver1 = new DedicatedServer(optionset, datapackconfiguration1, thread, iregistrycustom_dimension, convertable_conversionsession, resourcepackrepository, datapackresources, null, dedicatedserversettings, DataFixers.getDataFixerOH(), minecraftsessionservice, gameprofilerepository, usercache, LoggerChunkProgressListener::new);
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index d804685cd9ecec78628d62574a8f5de541c5bb0a..7910dc24d802bc0cfb0e50994bf430d9613fcc14 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -2524,7 +2524,7 @@ Sections go from 0..16. Now whenever a section is not empty, it can potentially
+         }
+     }
+ 
+-    class DistanceManagerOH extends DistanceManager {
++    public class DistanceManagerOH extends DistanceManager {
+ 
+         protected DistanceManagerOH(Executor executor, Executor executor1) {
+             super(executor, executor1);
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 8b6e2ed90335702384e66a15f6754776762fdd6f..61a25e91e70c5f50411efc69a125977f57fe157a 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -121,6 +121,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.chunk.ChunkAccess;
+ import net.minecraft.world.level.chunk.ChunkGenerator;
++import net.minecraft.world.level.chunk.ChunkSource;
+ import net.minecraft.world.level.chunk.ChunkStatus;
+ import net.minecraft.world.level.chunk.LevelChunk;
+ import net.minecraft.world.level.chunk.LevelChunkSection;
+@@ -207,7 +208,7 @@ public class ServerLevel extends net.minecraft.world.level.Level implements Worl
+     public final LevelStorageSource.LevelStorageAccess convertable;
+     public final UUID uuid;
+     public boolean hasPhysicsEvent = true; // Paper
+-    boolean hasEntityMoveEvent = false; // Paper
++    public boolean hasEntityMoveEvent = false; // Paper
+     private static Throwable getAddToWorldStackTrace(Entity entity) {
+         return new Throwable(entity + " Added to world at " + new java.util.Date());
+     }
+@@ -1675,6 +1676,11 @@ public class ServerLevel extends net.minecraft.world.level.Level implements Worl
+         this.server.getPlayerList().sendPacketNearby(entityhuman, (double) blockposition.getX(), (double) blockposition.getY(), (double) blockposition.getZ(), 64.0D, this.getDimensionKey(), new ClientboundLevelEventPacket(i, blockposition, j, false));
+     }
+ 
++    @Override
++    public ServerLevel getMinecraftWorld() {
++        return this;
++    }
++
+     @Override
+     public void notify(BlockPos blockposition, BlockState iblockdata, BlockState iblockdata1, int i) {
+         this.getChunkSourceOH().blockChanged(blockposition);
+@@ -1704,7 +1710,7 @@ public class ServerLevel extends net.minecraft.world.level.Level implements Worl
+         this.getChunkSourceOH().broadcastIncludingSelf(entity, new ClientboundEntityEventPacket(entity, b0));
+     }
+ 
+-    @Override
++    // @Override
+     public ServerChunkCache getChunkSourceOH() {
+         return this.chunkSource;
+     }
+@@ -1774,6 +1780,11 @@ public class ServerLevel extends net.minecraft.world.level.Level implements Worl
+         return this.liquidTicks;
+     }
+ 
++    @Override
++    public ChunkSource getChunkSource() {
++        return chunkSource;
++    }
++
+     @Nonnull
+     @Override
+     public MinecraftServer getServer() {
+@@ -1784,7 +1795,7 @@ public class ServerLevel extends net.minecraft.world.level.Level implements Worl
+         return this.portalForcer;
+     }
+ 
+-    public StructureManager getStructureManager() {
++    public StructureManager getStructureManagerOH() {
+         return this.server.getDefinedStructureManager();
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/level/WorldGenRegion.java b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
+index b36d2adaea5d4d4b042733873e04fcf541738f07..ba2ec4890850c5879346a890443435a3f84f6846 100644
+--- a/src/main/java/net/minecraft/server/level/WorldGenRegion.java
++++ b/src/main/java/net/minecraft/server/level/WorldGenRegion.java
+@@ -391,6 +391,11 @@ public class WorldGenRegion implements WorldGenLevel {
+     @Override
+     public void levelEvent(@Nullable Player entityhuman, int i, BlockPos blockposition, int j) {}
+ 
++    @Override
++    public ServerLevel getMinecraftWorld() {
++        return level;
++    }
++
+     @Override
+     public DimensionType dimensionType() {
+         return this.dimensionType;
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index e88322300239576e5506b3a8fd1ce41657ac2069..d89df65d78cb65126cf0b77b7b79af039f411c76 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -230,7 +230,7 @@ public class ServerGamePacketListenerImpl implements ServerGamePacketListener {
+     private long keepAliveChallenge; private void setKeepAliveID(long keepAliveID) { this.keepAliveChallenge = keepAliveID;}; private long getKeepAliveID() {return this.keepAliveChallenge; };  // Paper - OBFHELPER
+     // CraftBukkit start - multithreaded fields
+     private volatile int chatSpamTickCount;
+-    private static final AtomicIntegerFieldUpdater chatSpamField = AtomicIntegerFieldUpdater.newUpdater(ServerGamePacketListenerImpl.class, "chatThrottle");
++    private static final AtomicIntegerFieldUpdater chatSpamField = AtomicIntegerFieldUpdater.newUpdater(ServerGamePacketListenerImpl.class, "chatSpamTickCount");
+     private final java.util.concurrent.atomic.AtomicInteger tabSpamLimiter = new java.util.concurrent.atomic.AtomicInteger(); // Paper - configurable tab spam limits
+     private final java.util.concurrent.atomic.AtomicInteger recipeSpamPackets =  new java.util.concurrent.atomic.AtomicInteger(); // Paper - auto recipe limit
+     // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java b/src/main/java/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
+index 1e7558bb07ce8dbbed1e727e15ef892de46c0b8d..94f2db64882d091e3cb6c5cc8545313465547493 100644
+--- a/src/main/java/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
++++ b/src/main/java/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
+@@ -25,13 +25,6 @@ public class CrudeIncrementalIntIdentityHashBiMap<K> implements IdMap<K> {
+         this.usedIds = new java.util.BitSet(); // Paper
+     }
+ 
+-    // Paper start - decompile fix
+-    @Override
+-    public int getId(K k) {
+-        return getId(k);
+-    }
+-    // Paper end
+-
+     public int getId(@Nullable K k0) {
+         return this.getValue(this.indexOf(k0, this.hash(k0)));
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 4809d09ca14605e0f66ab60c378dc684453224c4..e5301c1755eaa81f1924e4923146fdd7547c315e 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1175,7 +1175,6 @@ public abstract class Entity implements Nameable, CommandSource, KeyedObject { /
+         return this.level.isRainingAt(blockposition) || this.level.isRainingAt(new BlockPos((double) blockposition.getX(), this.getBoundingBox().maxY, (double) blockposition.getZ()));
+     }
+ 
+-    public final boolean isInBubbleColumn() { return isInBubbleColumn(); } // Paper - OBFHELPER
+     public boolean isInBubbleColumn() {
+         return this.level.getType(this.blockPosition()).is(Blocks.BUBBLE_COLUMN);
+     }
+@@ -1332,7 +1331,6 @@ public abstract class Entity implements Nameable, CommandSource, KeyedObject { /
+         return this.fluidOnEyes == tag;
+     }
+ 
+-    public final boolean isInLava() { return isInLava(); } // Paper - OBFHELPER
+     public boolean isInLava() {
+         return !this.firstTick && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0D;
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/EntityType.java b/src/main/java/net/minecraft/world/entity/EntityType.java
+index 6c1b387a20909802a6ef349f342b2f0e01033454..ab181564092a1464d4a3cb550ed4b1b207cad908 100644
+--- a/src/main/java/net/minecraft/world/entity/EntityType.java
++++ b/src/main/java/net/minecraft/world/entity/EntityType.java
+@@ -417,7 +417,6 @@ public class EntityType<T extends Entity> {
+         return this.category;
+     }
+ 
+-    public String getDescriptionId() { return getDescriptionId(); } // Paper - OBFHELPER
+     public String getDescriptionId() {
+         if (this.descriptionId == null) {
+             this.descriptionId = Util.makeDescriptionId("entity", Registry.ENTITY_TYPE.getKey(this));
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index a957fb9a2cd2e347e17f9199e4b7de3bcf3deab3..b7f01a7e98c8515cfc2cd935f9c3bec783312778 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -295,7 +295,6 @@ public abstract class Mob extends LivingEntity {
+         this.entityData.register(Mob.DATA_MOB_FLAGS_ID, (byte) 0);
+     }
+ 
+-    public int getAmbientSoundInterval() { return getAmbientSoundInterval(); } // Paper - OBFHELPER
+     public int getAmbientSoundInterval() {
+         return 80;
+     }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Evoker.java b/src/main/java/net/minecraft/world/entity/monster/Evoker.java
+index c29659d27042f567da72187ea704e5437e53f588..262832b9fbd32d6b9292f40a6561899644a5d7c1 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Evoker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Evoker.java
+@@ -40,7 +40,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+ public class Evoker extends SpellcasterIllager {
+ 
+-    private Sheep wololoTarget; public final Sheep getWololoTarget() { return this.wololoTarget; } public final void setWololoTarget(Sheep sheep) { this.wololoTarget = sheep; } // Paper - OBFHELPER
++    private Sheep wololoTarget;
+ 
+     public Evoker(EntityType<? extends Evoker> entitytypes, Level world) {
+         super(entitytypes, world);
+@@ -114,12 +114,12 @@ public class Evoker extends SpellcasterIllager {
+         return SoundEvents.EVOKER_HURT;
+     }
+ 
+-    private void setWololoTarget(@Nullable Sheep entitysheep) {
++    public void setWololoTarget(@Nullable Sheep entitysheep) {
+         this.wololoTarget = entitysheep;
+     }
+ 
+     @Nullable
+-    private Sheep getWololoTarget() {
++    public Sheep getWololoTarget() {
+         return this.wololoTarget;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Phantom.java b/src/main/java/net/minecraft/world/entity/monster/Phantom.java
+index 879ba8b3282e3b019f30f1a159fea03a71703c55..050e994e2805fa747207d696678c5d80dcea7358 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Phantom.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Phantom.java
+@@ -254,7 +254,7 @@ public class Phantom extends FlyingMob implements Enemy {
+                 List<Player> list = Phantom.this.level.getNearbyPlayers(this.attackTargeting, (LivingEntity) Phantom.this, Phantom.this.getBoundingBox().inflate(16.0D, 64.0D, 16.0D));
+ 
+                 if (!list.isEmpty()) {
+-                    list.sort(Comparator.comparing(Entity::getY).reversed());
++                    list.sort(Comparator.comparingDouble((Entity e) -> e.getY()).reversed());
+                     Iterator iterator = list.iterator();
+ 
+                     while (iterator.hasNext()) {
+diff --git a/src/main/java/net/minecraft/world/entity/npc/AbstractVillager.java b/src/main/java/net/minecraft/world/entity/npc/AbstractVillager.java
+index a9bfe734af581c9103e17be0ab25479c85e92fe4..d2f678ea27908e13c54c0bd6e3fb15fdacd313c5 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/AbstractVillager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/AbstractVillager.java
+@@ -156,6 +156,10 @@ public abstract class AbstractVillager extends AgableMob implements Npc, Merchan
+         // Paper end
+     }
+ 
++    public Level getLevel(){ // Toothpick
++        return this.level;
++    }
++
+     protected abstract void rewardTradeXp(MerchantOffer merchantrecipe); 
+ 
+     @Override
+@@ -254,7 +258,6 @@ public abstract class AbstractVillager extends AgableMob implements Npc, Merchan
+         return this.level;
+     }
+ 
+-    protected final void updateTrades() { updateTrades(); } // Paper - OBFHELPER
+     protected abstract void updateTrades();
+ 
+     protected void a(MerchantOffers merchantrecipelist, VillagerTrades.ItemListing[] avillagertrades_imerchantrecipeoption, int i) {
+diff --git a/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java b/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
+index 514ca617d51c18fd92046061356e805587103a5b..a0329c74f4b988ebea13713c749e01d03765045a 100644
+--- a/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
++++ b/src/main/java/net/minecraft/world/inventory/AbstractContainerMenu.java
+@@ -117,7 +117,7 @@ public abstract class AbstractContainerMenu {
+         return slot;
+     }
+ 
+-    protected DataSlot addDataSlot(DataSlot containerproperty) { return addDataSlot(containerproperty); } protected DataSlot addDataSlot(DataSlot containerproperty) { // Paper - OBFHELPER
++    protected DataSlot addDataSlot(DataSlot containerproperty) {
+         this.dataSlots.add(containerproperty);
+         return containerproperty;
+     }
+diff --git a/src/main/java/net/minecraft/world/inventory/DataSlot.java b/src/main/java/net/minecraft/world/inventory/DataSlot.java
+index bfad2436c67f50928d12edbd2fd364120eaf48c6..e398f03a61ce54ea451447f2ba947ac5258b65f9 100644
+--- a/src/main/java/net/minecraft/world/inventory/DataSlot.java
++++ b/src/main/java/net/minecraft/world/inventory/DataSlot.java
+@@ -20,7 +20,7 @@ public abstract class DataSlot {
+         };
+     }
+ 
+-    public static DataSlot shared(final int[] aint, final int i) { return shared(aint, i); } public static DataSlot shared(final int[] aint, final int i) { // Paper - OBFHELPER
++    public static DataSlot shared(final int[] aint, final int i) {
+         return new DataSlot() {
+             @Override
+             public int get() {
+@@ -54,7 +54,7 @@ public abstract class DataSlot {
+ 
+     public abstract void set(int i);
+ 
+-    public boolean checkAndClearUpdateFlag() { return checkAndClearUpdateFlag(); } public boolean checkAndClearUpdateFlag() { // Paper - OBFHELPER
++    public boolean checkAndClearUpdateFlag() {
+         int i = this.get();
+         boolean flag = i != this.prevValue;
+ 
+diff --git a/src/main/java/net/minecraft/world/item/Item.java b/src/main/java/net/minecraft/world/item/Item.java
+index 97a49ba544a9d08a75c05ef3ff5cac3faf2a44e1..eed0229279ece3c8b030be9061e739a927c69a7c 100644
+--- a/src/main/java/net/minecraft/world/item/Item.java
++++ b/src/main/java/net/minecraft/world/item/Item.java
+@@ -152,8 +152,7 @@ public class Item implements ItemLike {
+         return Registry.ITEM.getKey(this).getPath();
+     }
+ 
+-    public String getOrCreateDescriptionId() { return getOrCreateDescriptionId(); } // Paper - OBFHELPER
+-    protected String getOrCreateDescriptionId() {
++    public String getOrCreateDescriptionId() {
+         if (this.descriptionId == null) {
+             this.descriptionId = Util.makeDescriptionId("item", Registry.ITEM.getKey(this));
+         }
+diff --git a/src/main/java/net/minecraft/world/level/block/Block.java b/src/main/java/net/minecraft/world/level/block/Block.java
+index c08ae9dc2a770061b71547ba8e0fc6b4a745eef6..f6d23fe6ea7dc3d9a4f52b9f8683a1df8c757656 100644
+--- a/src/main/java/net/minecraft/world/level/block/Block.java
++++ b/src/main/java/net/minecraft/world/level/block/Block.java
+@@ -319,7 +319,6 @@ public class Block extends BlockBehaviour implements ItemLike {
+         return !this.material.isSolid() && !this.material.isLiquid();
+     }
+ 
+-    public String getDescriptionId() { return getDescriptionId(); } // Paper - OBFHELPER
+     public String getDescriptionId() {
+         if (this.descriptionId == null) {
+             this.descriptionId = Util.makeDescriptionId("block", Registry.BLOCK.getKey(this));
+diff --git a/src/main/java/net/minecraft/world/level/block/state/properties/Property.java b/src/main/java/net/minecraft/world/level/block/state/properties/Property.java
+index a060fd3cad693759757dedb1274e5a0aed406999..a42e26e11f40e55051aac4b7bd38f86db64af36e 100644
+--- a/src/main/java/net/minecraft/world/level/block/state/properties/Property.java
++++ b/src/main/java/net/minecraft/world/level/block/state/properties/Property.java
+@@ -12,7 +12,8 @@ public abstract class Property<T extends Comparable<T>> {
+ 
+     private final Class<T> clazz;
+     private final String name;
+-    private Integer hashCode;
++    private static final java.util.concurrent.atomic.AtomicInteger hashId = new java.util.concurrent.atomic.AtomicInteger(1); // Paper - only one instance per configuration
++    private Integer hashCode = 92821 * hashId.getAndIncrement(); // Paper - only one instance per configuration;
+     private final Codec<T> codec;
+     private final Codec<Property.Value<T>> valueCodec;
+ 
+@@ -63,8 +64,6 @@ public abstract class Property<T extends Comparable<T>> {
+         return this == object; // Paper - only one instance per configuration
+     }
+ 
+-    private static final java.util.concurrent.atomic.AtomicInteger hashId = new java.util.concurrent.atomic.AtomicInteger(1); // Paper - only one instance per configuration
+-    private final int hashCode = 92821 * hashId.getAndIncrement(); // Paper - only one instance per configuration
+     public final int hashCode() {
+         if (this.hashCode == null) {
+             this.hashCode = this.generateHashCode();
+diff --git a/src/main/java/net/minecraft/world/level/lighting/LayerLightEngine.java b/src/main/java/net/minecraft/world/level/lighting/LayerLightEngine.java
+index 57eef5e173494cd7b73dac5be76282636e9d1d2a..d852095bf8b943e61d988d94aa51217af9359fe9 100644
+--- a/src/main/java/net/minecraft/world/level/lighting/LayerLightEngine.java
++++ b/src/main/java/net/minecraft/world/level/lighting/LayerLightEngine.java
+@@ -24,7 +24,7 @@ public abstract class LayerLightEngine<M extends DataLayerStorageMap<M>, S exten
+     protected final LightLayer layer;
+     protected final S storage;
+     private boolean runningLightUpdates;
+-    protected final BlockPos.MutableBlockPosition pos = new BlockPos.MutableBlockPosition(); protected final BlockPos.MutableBlockPosition pos = pos; // Paper
++    protected final BlockPos.MutableBlockPosition pos = new BlockPos.MutableBlockPosition();
+     private final long[] lastChunkPos = new long[2];
+     private final ChunkAccess[] lastChunk = new ChunkAccess[2]; // Paper
+ 
+diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+index dfb437409a9f49c26e06201de370661522b9f23c..ee6990b45ac203b81b9eda56077ccff7c2147c42 100644
+--- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -477,7 +477,7 @@ public class MapItemSavedData extends SavedData {
+ 
+         // Paper start
+         private void addSeenPlayers(java.util.Collection<MapDecoration> icons) {
+-            org.bukkit.entity.Player player = (org.bukkit.entity.Player) player.getBukkitEntity();
++            org.bukkit.entity.Player player = (org.bukkit.entity.Player) this.player.getBukkitEntity();
+             MapItemSavedData.this.decorations.forEach((name, mapIcon) -> {
+                 // If this cursor is for a player check visibility with vanish system
+                 org.bukkit.entity.Player other = org.bukkit.Bukkit.getPlayerExact(name); // Spigot
+diff --git a/src/main/java/net/minecraft/world/level/storage/LevelData.java b/src/main/java/net/minecraft/world/level/storage/LevelData.java
+index 186aadca3b73c11a68c5e9ab6bfb0a2c592e6752..ed204eb6c36585b89fdad469e065edf16da1130f 100644
+--- a/src/main/java/net/minecraft/world/level/storage/LevelData.java
++++ b/src/main/java/net/minecraft/world/level/storage/LevelData.java
+@@ -12,7 +12,6 @@ public interface LevelData {
+ 
+     int getZSpawn();
+ 
+-    default float getSpawnAngle() { return getSpawnAngle(); } // Paper - OBFHELPER
+     float getSpawnAngle();
+ 
+     long getGameTime();
+diff --git a/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java b/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java
+index 793f6a973584371cb1a596ff9d6b1b43ea577e0f..46dab182dd6d3ffae60f77f7ac22cec282e45a71 100644
+--- a/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java
++++ b/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer.java
+@@ -42,7 +42,7 @@ public abstract class LootPoolEntryContainer implements ComposableEntryContainer
+ 
+         // CraftBukkit start
+         @Override
+-        public void a(JsonObject jsonobject, T t0, JsonSerializationContext jsonserializationcontext) { // Paper - remove final
++        public void serialize(JsonObject jsonobject, T t0, JsonSerializationContext jsonserializationcontext) { // Paper - remove final
+             if (!org.apache.commons.lang3.ArrayUtils.isEmpty(t0.conditions)) {
+                 jsonobject.add("conditions", jsonserializationcontext.serialize(t0.conditions));
+             }
+diff --git a/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolSingletonContainer.java b/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolSingletonContainer.java
+index 9287a2178e02b7a0c11c07fd0100175b6592276f..8db104f5045e0c5b1cd16508099e2c45735c3bc1 100644
+--- a/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolSingletonContainer.java
++++ b/src/main/java/net/minecraft/world/level/storage/loot/entries/LootPoolSingletonContainer.java
+@@ -163,7 +163,7 @@ public abstract class LootPoolSingletonContainer extends LootPoolEntryContainer
+             }
+             // This is vanilla
+             float qualityModifer = (float) getQuality() * f;
+-            double baseWeight = (getWeight() + qualityModifer);
++            double baseWeight = (LootPoolSingletonContainer.this.getWeight() + qualityModifer);
+             if (com.destroystokyo.paper.PaperConfig.useAlternativeLuckFormula) {
+                 // Random boost to avoid losing precision in the final int cast on return
+                 final int weightBoost = 100;
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 22bde395939f97086e411cef190bb2b1e7ede79a..930c76f6544d5f1aee05641553a2eb5987827247 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -245,7 +245,7 @@ public class Main {
+                 }
+ 
+                 if (Main.class.getPackage().getImplementationVendor() != null && System.getProperty("IReallyKnowWhatIAmDoingISwear") == null) {
+-                    Date buildDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(Main.class.getPackage().getImplementationVendor()); // Paper
++                    Date buildDate = new SimpleDateFormat("yyyyMMdd-HHmm").parse(Main.class.getPackage().getImplementationVendor()); // Paper
+ 
+                     Calendar deadline = Calendar.getInstance();
+                     deadline.add(Calendar.DAY_OF_YEAR, -28);
+@@ -316,9 +316,9 @@ public class Main {
+             tryPreloadClass("com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent");
+             tryPreloadClass("com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent");
+             // Minecraft, seen during saving
+-            tryPreloadClass("net.minecraft.server.LightEngineLayerEventListener$Void");
+-            tryPreloadClass("net.minecraft.server.LightEngineLayerEventListener");
+-            tryPreloadClass("net.minecraft.server.ExceptionSuppressor");
++            tryPreloadClass("net.minecraft.world.level.lighting.LayerLightEventListener$DummyLightLayerEventListener");
++            tryPreloadClass("net.minecraft.world.level.lighting.LayerLightEventListener");
++            tryPreloadClass("net.minecraft.util.ExceptionCollector");
+             // Paper end
+         }
+     }
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..6474a7fb738e1238cc272afc5ff14b645947e688
+--- /dev/null
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -0,0 +1,41 @@
++# This is the main configuration file for Bukkit.
++# As you can see, there's actually not that much to configure without any plugins.
++# For a reference for any variable inside this file, check out the Bukkit Wiki at
++# https://www.spigotmc.org/go/bukkit-yml
++# 
++# If you need help on this file, feel free to join us on irc or leave a message
++# on the forums asking for advice.
++# 
++# IRC: #spigot @ irc.spi.gt
++#    (If this means nothing to you, just go to https://www.spigotmc.org/go/irc )
++# Forums: https://www.spigotmc.org/
++# Bug tracker: https://www.spigotmc.org/go/bugs
++
++
++settings:
++    allow-end: true
++    warn-on-overload: true
++    permissions-file: permissions.yml
++    update-folder: update
++    plugin-profiling: false
++    connection-throttle: 4000
++    query-plugins: true
++    deprecated-verbose: default
++    shutdown-message: Server closed
++    minimum-api: none
++spawn-limits:
++    monsters: 70
++    animals: 10
++    water-animals: 15
++    water-ambient: 20
++    ambient: 15
++chunk-gc:
++    period-in-ticks: 600
++ticks-per:
++    animal-spawns: 400
++    monster-spawns: 1
++    water-spawns: 1
++    water-ambient-spawns: 1
++    ambient-spawns: 1
++    autosave: 6000
++aliases: now-in-commands.yml
+diff --git a/src/main/resources/configurations/commands.yml b/src/main/resources/configurations/commands.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..0f45c397df38e8af1c8b5bb8ca24f54a88e5880b
+--- /dev/null
++++ b/src/main/resources/configurations/commands.yml
+@@ -0,0 +1,17 @@
++# This is the commands configuration file for Bukkit.
++# For documentation on how to make use of this file, check out the Bukkit Wiki at
++# https://www.spigotmc.org/go/commands-yml
++# 
++# If you need help on this file, feel free to join us on irc or leave a message
++# on the forums asking for advice.
++# 
++# IRC: #spigot @ irc.spi.gt
++#    (If this means nothing to you, just go to https://www.spigotmc.org/go/irc )
++# Forums: https://www.spigotmc.org/
++# Bug tracker: https://www.spigotmc.org/go/bugs
++
++command-block-overrides: []
++ignore-vanilla-permissions: false
++aliases:
++    icanhasbukkit:
++      - "version $1-"
+diff --git a/src/main/resources/configurations/help.yml b/src/main/resources/configurations/help.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..15c3d07070624ad453032a02d8d4d3f26bd6cb8d
+--- /dev/null
++++ b/src/main/resources/configurations/help.yml
+@@ -0,0 +1,55 @@
++# This is the help configuration file for Bukkit.
++# 
++# By default you do not need to modify this file. Help topics for all plugin commands are automatically provided by
++# or extracted from your installed plugins. You only need to modify this file if you wish to add new help pages to
++# your server or override the help pages of existing plugin commands.
++# 
++# This file is divided up into the following parts:
++# -- general-topics: lists admin defined help topics
++# -- index-topics:   lists admin defined index topics
++# -- amend-topics:   lists topic amendments to apply to existing help topics
++# -- ignore-plugins: lists any plugins that should be excluded from help
++# 
++# Examples are given below. When amending command topic, the string <text> will be replaced with the existing value
++# in the help topic. Color codes can be used in topic text. The color code character is & followed by 0-F.
++# ================================================================
++# 
++# Set this to true to list the individual command help topics in the master help.
++# command-topics-in-master-index: true
++# 
++# Each general topic will show up as a separate topic in the help index along with all the plugin command topics.
++# general-topics:
++#     Rules:
++#         shortText: Rules of the server
++#         fullText: |
++#             &61. Be kind to your fellow players.
++#             &B2. No griefing.
++#             &D3. No swearing.
++#         permission: topics.rules
++# 
++# Each index topic will show up as a separate sub-index in the help index along with all the plugin command topics.
++# To override the default help index (displayed when the user executes /help), name the index topic "Default".
++# index-topics:
++#     Ban Commands:
++#         shortText: Player banning commands
++#         preamble: Moderator - do not abuse these commands
++#         permission: op
++#         commands:
++#             - /ban
++#             - /ban-ip
++#             - /banlist
++# 
++# Topic amendments are used to change the content of automatically generated plugin command topics.
++# amended-topics:
++#     /stop:
++#         shortText: Stops the server cold....in its tracks!
++#         fullText: <text> - This kills the server.
++#         permission: you.dont.have
++# 
++# Any plugin in the ignored plugins list will be excluded from help. The name must match the name displayed by
++# the /plugins command. Ignore "Bukkit" to remove the standard bukkit commands from the index. Ignore "All"
++# to completely disable automatic help topic generation.
++# ignore-plugins:
++#    - PluginNameOne
++#    - PluginNameTwo
++#    - PluginNameThree
+diff --git a/src/main/resources/log4j2.component.properties b/src/main/resources/log4j2.component.properties
+new file mode 100644
+index 0000000000000000000000000000000000000000..30efeb5faf8e7faccf1b252fa0ed6a9fc31c40a7
+--- /dev/null
++++ b/src/main/resources/log4j2.component.properties
+@@ -0,0 +1,3 @@
++Log4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
++log4j2.AsyncQueueFullPolicy="com.destroystokyo.paper.log.LogFullPolicy"
++log4j.skipJansi=true
+diff --git a/src/main/resources/log4j2.xml b/src/main/resources/log4j2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..8af159abd3d0cc94cf155fec5b384c42f69551bf
+--- /dev/null
++++ b/src/main/resources/log4j2.xml
+@@ -0,0 +1,43 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<Configuration status="WARN" packages="com.mojang.util" shutdownHook="disable">
++    <Appenders>
++        <Queue name="ServerGuiConsole">
++            <PatternLayout pattern="[%d{HH:mm:ss} %level]: %msg%n" />
++        </Queue>
++        <TerminalConsole name="TerminalConsole">
++            <PatternLayout>
++                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level]: [%logger] %minecraftFormatting{%msg}%n%xEx{full}}">
++                    <!-- Log root, Minecraft, Mojang and Bukkit loggers without prefix -->
++                    <!-- Disable prefix for various plugins that bypass the plugin logger -->
++                    <PatternMatch key=",net.minecraft.,Minecraft,com.mojang.,com.sk89q.,ru.tehkode.,Minecraft.AWE"
++                                  pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx{full}}" />
++                </LoggerNamePatternSelector>
++            </PatternLayout>
++        </TerminalConsole>
++        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
++            <PatternLayout>
++                <LoggerNamePatternSelector defaultPattern="[%d{HH:mm:ss}] [%t/%level]: [%logger] %minecraftFormatting{%msg}{strip}%n%xEx{full}">
++                    <!-- Log root, Minecraft, Mojang and Bukkit loggers without prefix -->
++                    <!-- Disable prefix for various plugins that bypass the plugin logger -->
++                    <PatternMatch key=",net.minecraft.,Minecraft,com.mojang.,com.sk89q.,ru.tehkode.,Minecraft.AWE"
++                                  pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n%xEx{full}" />
++                </LoggerNamePatternSelector>
++            </PatternLayout>
++            <Policies>
++                <TimeBasedTriggeringPolicy />
++                <OnStartupTriggeringPolicy />
++            </Policies>
++            <DefaultRolloverStrategy max="1000"/>
++        </RollingRandomAccessFile>
++    </Appenders>
++    <Loggers>
++        <Root level="info">
++            <filters>
++                <MarkerFilter marker="NETWORK_PACKETS" onMatch="DENY" onMismatch="NEUTRAL" />
++            </filters>
++            <AppenderRef ref="File"/>
++            <AppenderRef ref="TerminalConsole" level="info"/>
++            <AppenderRef ref="ServerGuiConsole" level="info"/>
++        </Root>
++    </Loggers>
++</Configuration>
