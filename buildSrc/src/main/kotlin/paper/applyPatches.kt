@@ -90,22 +90,24 @@ fun applyPatches(project: Project): Task {
 
             // for 21w06a patch
             // import("", logger)
-            import("CrashReportSystemDetails", logger)
-            import("MinecraftVersion", logger)
-            import("CriterionTriggerBeeNestDestroyed", logger)
-            import("CriterionConditionBlock", logger)
-            import("CriterionTriggerBredAnimals", logger)
-            import("CriterionTriggerConstructBeacon", logger)
-            // import("CriterionConditionEntity", logger)
-            import("CriterionConditionEntityType", logger)
-            import("CriterionConditionInOpenWater", logger)
-            import("CriterionConditionFluid", logger)
-            import("CriterionConditionItem", logger)
-            import("CriterionConditionNBT", logger)
-            import("CriterionConditionPlayer", logger)
-            import("ArgumentAngle", logger)
-            import("ArgumentMobEffect", logger)
-            import("ArgumentMathOperation", logger)
+            import("CrashReportSystemDetails", logger) // CrashReportCategory
+            import("MinecraftVersion", logger) // DetectedVersion
+            import("CriterionTriggerBeeNestDestroyed", logger) // BeeNestDestroyedTrigger
+            import("CriterionConditionBlock", logger) // BlockPredicate
+            /*
+            import("CriterionTriggerBredAnimals", logger) // BredAnimalsTrigger
+            import("CriterionTriggerConstructBeacon", logger) // ConstructBeaconTrigger
+            import("CriterionConditionEntity", logger) // EntityPredicate
+            import("CriterionConditionEntityType", logger) // EntityTypePredicate
+            import("CriterionConditionInOpenWater", logger) // FishingHookPredicate
+            import("CriterionConditionFluid", logger) // FluidPredicate
+            import("CriterionConditionItem", logger) // ItemPredicate
+            import("CriterionConditionNBT", logger) // NbtPredicate
+            import("CriterionConditionPlayer", logger) // PlayerPredicate
+            import("ArgumentAngle", logger) // AngleArgument
+            import("ArgumentMobEffect", logger) // MobEffectArgument
+            import("ArgumentMathOperation", logger) // OperationArgument
+            */
 
 
             // libs
