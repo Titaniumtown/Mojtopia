@@ -26,9 +26,9 @@ fun dumShitTasks(project: Project): List<Task> {
     val modDecomp = workFolder.resolve("modDecomp")
     val patched = workFolder.resolve("patched")
     val paperWorkDir = project.projectDir.resolve("work/Paper/work")
-    val serverUrl = "https://launcher.mojang.com/v1/objects/6290ba4b475fca4a74de990c7fd8eccffd9654dd/server.jar"
-    val serverMappingUrl = "https://launcher.mojang.com/v1/objects/c4e373406d2166580c33b075c2d05d9d2fb18d43/server.txt"
-    val minecraftVersion = "21w06a"
+    val serverUrl = "https://launcher.mojang.com/v1/objects/99c3a9744719d0d401af63bb684cf1eb5231a75c/server.jar"
+    val serverMappingUrl = "https://launcher.mojang.com/v1/objects/66ebacdeccfdf8f6439f7a90234fc76e8ef5c5a6/server.txt"
+    val minecraftVersion = "21w07a"
     /*
     val serverUrl = "https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar"
     val serverMappingUrl = "https://launcher.mojang.com/v1/objects/41285beda6d251d190f2bf33beadd4fee187df7a/server.txt"
